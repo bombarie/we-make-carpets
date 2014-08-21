@@ -68,7 +68,7 @@ var serialPort = new SerialPort(ARDUINO, {
   baudrate: BAUDRATE,
 
   // this parser will only trigger an event after a \n (newline)
-  // parser: serialport.parsers.readline("\n")
+  parser: serialport.parsers.readline("\n")
 });
 serialPort.on("open", function () {
   serialConnected = true;
@@ -120,7 +120,16 @@ io.sockets.on('connection', function (socket) {
 	
 	socket.emit('connected', '');
 
-	socket.on('getPing', function(data) {
+  socket.on('turnOn', function(data) {
+    if(debug) console.log("turn on led ", data);
+  });
+
+  socket.on('turnOff', function(data) {
+    if(debug) console.log("turn off led ", data);
+  });
+
+
+  socket.on('getPing', function(data) {
 		if(debug) console.log("socket trigger 'getPing' >> data: ", data);
 
     // '2' will be the code for sending back the current internal counter value

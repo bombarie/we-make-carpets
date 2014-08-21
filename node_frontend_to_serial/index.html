@@ -9,14 +9,17 @@
   <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
-<h1>push da button</h1>
-<div>
-  <span>Ping count:</span>
-  <span class="counterHolder">... (nothing yet)</span>
+<div class="clearfix">
+  <h1>push da button</h1>
+  <div id="led_on" class="btn">led on</div>
+  <div id="led_off" class="btn">led off</div>
+  <div id="get_ping" class="btn">get ping count</div>
+  <div>
+    <span>Ping count:</span>
+    <span class="counterHolder">... (nothing yet)</span>
+  </div>
 </div>
-<div id="led_on" class="btn">led on</div>
-<div id="led_off" class="btn">led off</div>
-<div id="get_ping" class="btn">get ping count</div>
+<div id="buttonsContainer" class="clearfix"></div>
 
 <script src="js/libs/jquery-2.1.1.js"></script>
 <!--<script src="http://localhost:1337/socket.io/socket.io.js"></script>-->

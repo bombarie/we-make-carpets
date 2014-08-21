@@ -21,3 +21,45 @@ div.btn:hover {
 div.btn:active {
   background-color: #aaa;
 }
+
+div.ledbtn {
+  float:left;
+  width: 40px;
+  height: 20px;
+  margin: 3px;
+  padding: 4px;
+  text-align: center;
+  color: #fff;
+  background-color: #888;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+
+}
+div.ledbtn:active {
+  background-color: #444 !important;
+}
+.on {
+  background-color: #eee !important;
+  color: #888 !important;
+}
+
+
+
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  *zoom: 1;
+}
