@@ -72,7 +72,7 @@ var serialPort = new SerialPort(ARDUINO, {
 });
 serialPort.on("open", function () {
   serialConnected = true;
-  if(debug) console.log('Serial port opened');
+  if(debug) console.log('Serial port opened >> system is ' + BASE_OS + ", portname '" + ARDUINO + "'");
 
   serialPort.on('data', function(data) {
     // console.log('data received: ' + data);
