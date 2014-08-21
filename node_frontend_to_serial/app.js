@@ -33,7 +33,7 @@ if (process.platform == 'linux') {
 if(debug) console.log("Detected system is " + BASE_OS);
 
 if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbmodemfa141";
-if (BASE_OS == LINUX) ARDUINO = ARDUINO = "/dev/ttyATH0";
+if (BASE_OS == LINUX) ARDUINO = "/dev/ttyATH0";
 
 //==========================================================
 // Initiate Express
@@ -68,14 +68,14 @@ var serialPort = new SerialPort(ARDUINO, {
   baudrate: BAUDRATE,
 
   // this parser will only trigger an event after a \n (newline)
-  parser: serialport.parsers.readline("\n")
+  // parser: serialport.parsers.readline("\n")
 });
 serialPort.on("open", function () {
   serialConnected = true;
   if(debug) console.log('Serial port opened >> system is ' + BASE_OS + ", portname '" + ARDUINO + "'");
 
   serialPort.on('data', function(data) {
-    // console.log('data received: ' + data);
+    if(debug) console.log('serial data received: ' + data);
     if (data.split(" ")[0] == 'ping') {
       var count = data.split(" ")[1];
       console.log('	From arduino: ping count = ' + count);
@@ -97,9 +97,10 @@ serialPort.on("open", function () {
 
   // Test that serialport is working.
   // For now that entails requesting the Arduino's current ping count
+  console.log("  test: writing to Arduino, just a simple poll for current ping count"); 
   serialPort.write('2', function(err, results) {
-    // console.log('err ' + err);
-    // console.log('results ' + results);
+    console.log('    err ' + err);
+    console.log('    results ' + results);
   });
 });
 
@@ -123,6 +124,7 @@ io.sockets.on('connection', function (socket) {
 		if(debug) console.log("socket trigger 'getPing' >> data: ", data);
 
     // '2' will be the code for sending back the current internal counter value
+    if(debug) console.log("requesting pingcount to Arduino >> serialConnected = " + serialConnected);
     if (serialConnected) serialPort.write("2");
 	});
 
