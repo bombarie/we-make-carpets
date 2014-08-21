@@ -1,6 +1,9 @@
-var socketio	=	require('socket.io'),
-	http		=	require('http'),
-	express		=	require('express');
+#!/usr/bin/env node
+
+var socketio	= require('socket.io');
+var http	= require('http');
+var path 	= require('path');
+var express	= require('express');
 
 var debug = true;
 
@@ -10,7 +13,7 @@ var debug = true;
 var IP = '127.0.0.1';
 var HTTP_PORT = 1337;
 var BAUDRATE = 57600;
-var ARDUINO = "/dev/tty.usbmodemfd131";
+var ARDUINO = "/dev/tty.usbmodemfa131";
 
 var app = express();
 app.use(express.static(__dirname));
@@ -23,11 +26,14 @@ app.use(express.static(__dirname));
 //==========================================================
 var server = http.createServer(app);
 server.listen(HTTP_PORT);
-if(debug){
-	socketio = socketio.listen(server, {'log level': 1});
-}else{
-	socketio = socketio.listen(server, {log: false});
-}
+// if(debug){
+var io = socketio.listen(server);
+//var io = socketio.listen(server, {'log level': 1});
+// }else{
+//	socketio = socketio.listen(server, {log: false});
+//}
+
+if(debug) console.log("server listening at port " + HTTP_PORT); 
 
 //==========================================================
 // Create Socket.io instance
@@ -35,11 +41,13 @@ if(debug){
 //==========================================================
 var isConnected = false;
 var connectedSocket = '';
-socketio.on('connection', function (socket) {
+io.sockets.on('connection', function (socket) {
   if(debug) console.log("a user connected");
 
 	connectedSocket = socket;
 	isConnected = true;
+	
+	socket.emit('connected', '');
 
 	socket.on('getPing', function(data) {
 		if(debug) console.log("socket trigger 'getPing' >> data: ", data);
@@ -59,7 +67,7 @@ socketio.on('connection', function (socket) {
 	//==========================================================
 	// Device disconnected
 	//==========================================================
-	socketio.on('disconnect', function () {
+	io.sockets.on('disconnect', function () {
 		var numRemaining = Object.keys(connection.manager.roomClients).length - 1;
 		if(debug) console.log("Disconnected " + connection.id);
 		if (numRemaining < 1) {
