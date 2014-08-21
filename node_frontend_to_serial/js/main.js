@@ -46,19 +46,7 @@ function generateButtons(numX, numY) {
     for (var i = 0; i < numX; i++) {
       var $div = $("<div class='ledbtn'>" + i + "," + j + "</div>");
       $div.data("position", { x:i, y:j });
-      $row.append($div)
-      $div.on('click tap', function (e) {
-        console.log("got tapped >> e = ", e);
-        console.log("got tapped at position " + $(this).data("position").x + "," + $(this).data("position").y);
-
-        if ($(this).hasClass('on')) {
-          $(this).removeClass('on');
-          socket.emit('turnOff', [$(this).data("position").x, $(this).data("position").y]);
-        } else {
-          $(this).addClass('on');
-          socket.emit('turnOn', [$(this).data("position").x, $(this).data("position").y]);
-        }
-      });
+      $row.append($div);
     }
     $("#buttonsContainer").append($row);
   }
@@ -70,6 +58,26 @@ $(function () {
 
   // generate matrix
   generateButtons(14, 14);
+
+  $('.body').hammer( {
+    prevent_default: true,
+    no_mouseevents: true
+  });
+
+  // add click events to the generated led buttons
+  $(".ledbtn").hammer().on("tap press", function (e) {
+    console.log("got tapped >> e = ", e);
+    console.log("got tapped at position " + $(this).data("position").x + "," + $(this).data("position").y);
+
+    if ($(this).hasClass('on')) {
+      $(this).removeClass('on');
+      socket.emit('turnOff', [$(this).data("position").x, $(this).data("position").y]);
+    } else {
+      $(this).addClass('on');
+      socket.emit('turnOn', [$(this).data("position").x, $(this).data("position").y]);
+    }
+    console.log("tap");
+  });
 
   $("#led_on").on('click tap', function (e) {
     e.preventDefault();

@@ -97,8 +97,10 @@ serialPort.on("open", function () {
 
   // Test that serialport is working.
   // For now that entails requesting the Arduino's current ping count
-  console.log("  test: writing to Arduino, just a simple poll for current ping count"); 
-  serialPort.write('2', function(err, results) {
+  console.log("  Serial test >> writing a 1-byte buffer containing the number 33 to Arduino");
+  var b = new Buffer(1);
+  b[0] = 33;
+  serialPort.write(b, function(err, results) {
     console.log('    err ' + err);
     console.log('    results ' + results);
   });
@@ -126,8 +128,10 @@ io.sockets.on('connection', function (socket) {
     if(debug) console.log("turn on led ", data);
     if(debug) console.log(" sending to serial port: " + (data[0] + 32));
 
-    var toSend = new Buffer(1);
-    toSend[0] = data[0] + 32;
+    var toSend = new Buffer(3);
+    toSend[0] = 255;
+    toSend[1] = data[0] + 32;
+    toSend[2] = data[1] + 32;
 
     if (serialConnected) serialPort.write(toSend, function(err) {
       if (err) if(debug) console.log("serial write err: " + err);
@@ -138,8 +142,10 @@ io.sockets.on('connection', function (socket) {
     if(debug) console.log("turn off led ", data);
     if(debug) console.log(" sending to serial port: " + (data[0] + 32));
 
-    var toSend = new Buffer(1);
-    toSend[0] = data[0] + 32;
+    var toSend = new Buffer(3);
+    toSend[0] = 254;
+    toSend[1] = data[0] + 32;
+    toSend[2] = data[1] + 32;
 
     if (serialConnected) serialPort.write(toSend, function(err) {
       if (err) if(debug) console.log("serial write err: " + err);

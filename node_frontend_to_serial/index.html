@@ -4,24 +4,25 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>serial interfacing</title>
   <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 
   <link href="css/styles.css" rel="stylesheet">
 </head>
-<body>
-<div class="clearfix">
-  <h1>push da button</h1>
-  <div id="led_on" class="btn">led on</div>
-  <div id="led_off" class="btn">led off</div>
-  <div id="get_ping" class="btn">get ping count</div>
-  <div>
-    <span>Ping count:</span>
-    <span class="counterHolder">... (nothing yet)</span>
-  </div>
-</div>
+<body class="body">
+<!--<div class="clearfix">-->
+  <!--<h1>push da button</h1>-->
+  <!--<div id="led_on" class="btn">led on</div>-->
+  <!--<div id="led_off" class="btn">led off</div>-->
+  <!--<div id="get_ping" class="btn">get ping count</div>-->
+  <!--<div>-->
+    <!--<span>Ping count:</span>-->
+    <!--<span class="counterHolder">... (nothing yet)</span>-->
+  <!--</div>-->
+<!--</div>-->
 <div id="buttonsContainer" class="clearfix"></div>
 
-<script src="js/libs/jquery-2.1.1.js"></script>
+<script src="js/libs/jquery-2.1.1.min.js"></script>
+<script src="js/libs/jquery.hammer.min.js"></script>
 <!--<script src="http://localhost:1337/socket.io/socket.io.js"></script>-->
 <!--<script src="/socket.io/socket.io.js"></script>-->
 <!--<script src="js/libs/socket.io.js"></script>-->
