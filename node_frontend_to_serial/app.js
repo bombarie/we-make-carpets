@@ -105,6 +105,8 @@ serialPort.on("open", function () {
 });
 
 
+// this offset is so we don't accidentally send the number 10 or 13 (ascii LR and CR)
+var LedNumberOffset = 32;
 
 //==========================================================
 // Create Socket.io instance
@@ -122,10 +124,26 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('turnOn', function(data) {
     if(debug) console.log("turn on led ", data);
+    if(debug) console.log(" sending to serial port: " + (data[0] + 32));
+
+    var toSend = new Buffer(1);
+    toSend[0] = data[0] + 32;
+
+    if (serialConnected) serialPort.write(toSend, function(err) {
+      if (err) if(debug) console.log("serial write err: " + err);
+    });
   });
 
   socket.on('turnOff', function(data) {
     if(debug) console.log("turn off led ", data);
+    if(debug) console.log(" sending to serial port: " + (data[0] + 32));
+
+    var toSend = new Buffer(1);
+    toSend[0] = data[0] + 32;
+
+    if (serialConnected) serialPort.write(toSend, function(err) {
+      if (err) if(debug) console.log("serial write err: " + err);
+    });
   });
 
 

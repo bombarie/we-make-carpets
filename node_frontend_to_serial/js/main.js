@@ -1,5 +1,5 @@
-//var socket = io.connect(window.location.hostname + ":1337");
-var socket = io();
+var socket = io.connect(window.location.hostname + ":1337");
+//var socket = io();
 
 socket.on('pingBack', function (msg) {
   console.log("socket.io >> testback() >>  got a reply: " + msg);
