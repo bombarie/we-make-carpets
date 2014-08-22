@@ -91,7 +91,7 @@ serialPort.on("open", function () {
         // console.log('results ' + results);
       });
     } else {
-      console.log(data);
+      // console.log(data);
     }
   });
 
@@ -126,7 +126,6 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('turnOn', function(data) {
     if(debug) console.log("turn on led ", data);
-    if(debug) console.log(" sending to serial port: " + (data[0] + 32));
 
     var toSend = new Buffer(3);
     toSend[0] = 255;
@@ -140,7 +139,6 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('turnOff', function(data) {
     if(debug) console.log("turn off led ", data);
-    if(debug) console.log(" sending to serial port: " + (data[0] + 32));
 
     var toSend = new Buffer(3);
     toSend[0] = 254;
