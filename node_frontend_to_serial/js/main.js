@@ -46,8 +46,10 @@ function generateButtons(numX, numY) {
   for (var j = 0; j < numY; j++) {
     var $row = $("<div class='row clearfix'></div>");
     for (var i = 0; i < numX; i++) {
-
-	var _class = (Math.random() > 0.5 ? "ledbtn" : "ledbtn small");
+	 
+		// console.log("conversion["+(j)+"]["+(i)+ "] = " + conversion[j][i]);
+	 
+	  var _class = (conversion[j][i]? "ledbtn" : "ledbtn small");
 
       var $div = $("<div class='" + _class + "'><span class='debug'>" + i + "," + j + "</span></div>");
       $div.data("position", { x:i, y:j });
