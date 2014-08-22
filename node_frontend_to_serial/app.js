@@ -69,6 +69,10 @@ var serialPort = new SerialPort(ARDUINO, {
 
   // this parser will only trigger an event after a \n (newline)
   parser: serialport.parsers.readline("\n")
+}, function(error)
+{
+	// Failed opening port (no arduino found)
+	console.error(error);
 });
 serialPort.on("open", function () {
   serialConnected = true;

@@ -5,15 +5,21 @@ html,body{
   width:100%;
 }
 
+body 
+{
+	background-color: white;
+}
+
 div.btn {
   float:left;
   border: 1px solid #444;
-  border-radius: 5px ;
+  border-radius: 5px;
   color: #444;
   cursor: pointer;
+  width: 16px;
+  height: 16px;
   background-color: #eee;
-  margin: 7px 16px;
-  padding: 7px 16px;
+  margin: 0.5px;
 }
 div.btn:hover {
   background-color: #ddd;
@@ -21,40 +27,59 @@ div.btn:hover {
 div.btn:active {
   background-color: #aaa;
 }
+	
 
 #buttonsContainer {
+	margin-top: 56px;
 }
 
 .row {
 }
 
-div.ledbtn {
+div.ledbtn, div.smallledbtn {
   float:left;
-  width: 47px;
-  height: 24px;
-  margin: 6px;
-  padding: 5px;
+  width: 13px;
+  height: 13px;
+  margin: 2px;
   cursor: pointer;
   text-align: center;
   color: #fff;
-  background-color: #888;
+  background-image: url("/img/led_white.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-
+  font-size: 6px;
 
 }
 div.ledbtn:active {
-  background-color: #444 !important;
+   background-image: url("/img/led_gray.png") !important;
 }
-.on {
-  background-color: #eee !important;
+div.ledbtn.on {
+  background-image: url("/img/led_black.png") !important;
   color: #888 !important;
 }
 
+div.small
+{
+	background-image: url("/img/led_small_white.png")  !important;
+}
+div.small:active
+{
+	background-image: url("/img/led_small_gray.png") !important;
+}
+div.small.on
+{
+	background-image: url("/img/led_small_black.png")  !important;
+}
+.debug 
+{
+	display: none;
+}
 
 
 .clearfix:before,
