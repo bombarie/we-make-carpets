@@ -27,11 +27,10 @@ div.btn:hover {
 div.btn:active {
   background-color: #aaa;
 }
-
-
-
+	
 
 #buttonsContainer {
+	margin-top: 56px;
 }
 
 .row {
