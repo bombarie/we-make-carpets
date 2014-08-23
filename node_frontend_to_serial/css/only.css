@@ -17,18 +17,24 @@ div.btn {
   border: 1px solid #303030;
   color: #444;
   cursor: pointer;
-  width: 64px;
-  height: 32px;
+  width: 128px;
+  height: 64px;
   background-color: #eee;
   text-align: center;
   font-family: sans-serif;
-  margin: 4px;
+  margin: 8px;
 }
+
+#topButtonsContainer {
+  width: 100%;
+  margin: 0 auto;
+}
+
 /*div.btn:hover {*/
-  /*background-color: #ddd;*/
+/*background-color: #ddd;*/
 /*}*/
 /*div.btn:active {*/
-  /*background-color: #aaa;*/
+/*background-color: #aaa;*/
 /*}*/
 
 div.btn.active
@@ -45,32 +51,31 @@ div.btn.active
   background-color: white;
 }
 
-#topButtonsContainer {
-  width: 100%;
-  margin: 0 auto;
-}
+
 
 #buttonsContainer {
   /*margin-top: 56px;*/
   position: absolute;
-  top: 56px;
-  left: 3px;
+  top: 112px;
+  left: 6px;
 
 }
-
 
 .row {
 }
 
 div.ledbtn, div.smallledbtn {
   float:left;
-  width: 14px;
-  height: 14px;
-  margin: 0px;
+  width: 20px;
+  height: 20px;
+  margin: 2px;
   cursor: pointer;
   text-align: center;
   color: #fff;
-  background-image: url("/img/led_white.png");
+  /*   background-image: url("/img/led_white.png"); */
+  border: 1px solid gray;
+  border-radius: 12px;
+  background-color: white;
   background-size: 80%;
   background-repeat: no-repeat;
   -webkit-touch-callout: none;
@@ -80,28 +85,28 @@ div.ledbtn, div.smallledbtn {
   -ms-user-select: none;
   user-select: none;
   font-size: 6px;
+  -webkit-transition: background-color 200ms linear;
+  -moz-transition: background-color 200ms linear;
+  -o-transition: background-color 200ms linear;
+  -ms-transition: background-color 200ms linear;
+  transition: background-color 200ms linear;
 
 }
 div.ledbtn:active {
-  /*background-image: url("/img/led_gray.png") !important;*/
 }
 div.ledbtn.on {
-  background-image: url("/img/led_black.png") !important;
+  background-color: black;
   color: #888 !important;
 }
 
 div.small
 {
-  background-image: url("/img/led_small_white.png")  !important;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin: 6px;
 }
-div.small:active
-{
-  /*background-image: url("/img/led_small_gray.png") !important;*/
-}
-div.small.on
-{
-  background-image: url("/img/led_small_black.png")  !important;
-}
+
 .debug
 {
   display: none;

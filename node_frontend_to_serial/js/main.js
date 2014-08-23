@@ -51,7 +51,7 @@ function generateButtons(numX, numY) {
 	 
 	  var _class = (conversion[j][i]? "ledbtn" : "ledbtn small");
 
-      var $div = $("<div class='" + _class + "'><span class='debug'>" + i + "," + j + "</span></div>");
+      var $div = $("<div id='"+i+"_"+j+"'  class='" + _class + "'><span class='debug'>" + i + "," + j + "</span></div>");
       $div.data("position", { x:i, y:j });
       $row.append($div);
     }
@@ -66,69 +66,67 @@ $(function () {
   // generate matrix
   generateButtons(62, 40);
 
-  $('.body').hammer( {
-    prevent_default: true,
-    no_mouseevents: true
+
+  $("#led_on").on('mousedown', function (e) {
+    $("#led_off").removeClass("active");
+    $(this).addClass("active");
   });
 
-  // add click events to the generated led buttons
-  $(".ledbtn").hammer().on("tap press", function (e) {
-    console.log("got tapped >> e = ", e);
-    console.log("got tapped at position " + $(this).data("position").x + "," + $(this).data("position").y);
-
-    if ($(this).hasClass('on')) {
-      $(this).removeClass('on');
-      socket.emit('turnOff', [$(this).data("position").x, $(this).data("position").y]);
-    } else {
-      $(this).addClass('on');
-      socket.emit('turnOn', [$(this).data("position").x, $(this).data("position").y]);
-    }
-    console.log("tap");
+  $("#led_off").on('mousedown', function (e) {
+    $("#led_on").removeClass("active");
+    $(this).addClass("active");
   });
 
-  $("#led_on").on('click tap', function (e) {
-    e.preventDefault();
-    socket.emit('setLed', '1');
-    console.log("clicked on 'led on'");
+  $("#all_off").on('mousedown', function (e) {
+    $(".ledbtn.on").removeClass("on").addClass("transmit");
   });
-  $("#led_off").on('click tap', function (e) {
-    e.preventDefault();
-    socket.emit('setLed', '0');
-    console.log("clicked on 'led off'");
+
+  $("#all_on").on('mousedown', function (e) {
+    $(".ledbtn").not(".on").addClass("on").addClass("transmit");
+
+//    for (var j = 0; j <= 40; j++) {
+//      for (var i = 0; i <= 62; i++) {
+//          $("#"+i+"_"+j).not(".on").addClass("on").addClass("transmit");
+////        }, i*j);
+//        }
+//      }
   });
-  $("#get_ping").on('click tap', function (e) {
-    e.preventDefault();
-    socket.emit('getPing', '');
-    console.log("clicked on 'get ping'");
-  });
-  
-  // Uses document because document will be topmost level in bubbling
+
+//  $("#get_ping").on('click tap', function (e) {
+//    e.preventDefault();
+//    socket.emit('getPing', '');
+//    console.log("clicked on 'get ping'");
+//  });
+
+  // Turn touches into drawing
   $(document).on('touchmove',function(e){
+
+    for(var i = 0; i < Math.min(e.originalEvent.touches.length, 2); i++)
+    {
+      var t = e.originalEvent.touches[i];
+      var pos = {
+                x: 1 + Math.floor((t.clientX - 6)/26),
+                y: 1 + Math.floor((t.clientY - 112)/26)
+              };
+      var $btn = $("#" + pos.x + "_" + pos.y);
+//    console.log(t.target);
+
+      if ($("#led_on").hasClass("active")) $btn.addClass('on').addClass("transmit");
+      else $btn.removeClass('on').addClass("transmit");
+    }
+    // don't scroll the page
     e.preventDefault();
   });
 
-  var scrolling = false;
 
-  // Uses body because jquery on events are called off of the element they are
-  // added to, so bubbling would not work if we used document instead.
-  $('body').on('touchstart','.scrollable',function(e) {
-
-      // Only execute the below code once at a time
-      if (!scrolling) {
-          scrolling = true;   
-          if (e.currentTarget.scrollTop === 0) {
-            e.currentTarget.scrollTop = 1;
-          } else if (e.currentTarget.scrollHeight === e.currentTarget.scrollTop + e.currentTarget.offsetHeight) {
-            e.currentTarget.scrollTop -= 1;
-          }
-          scrolling = false;
-      }
-  });
-
-  // Prevents preventDefault from being called on document if it sees a scrollable div
-  $('body').on('touchmove','.scrollable',function(e) {
-    e.stopPropagation();
-  });
-
+  // Transmit the data
+  var transmit = setInterval(function()
+  {
+    $(".ledbtn.transmit").each(function()
+    {
+      $(this).removeClass("transmit");
+      socket.emit(($(this).hasClass("on") ? 'turnOn' : 'turnOff'), [$(this).data("position").x, $(this).data("position").y]);
+    })
+  }, 40); //transmit at 25fps
 
 });
