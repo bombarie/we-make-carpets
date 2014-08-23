@@ -78,18 +78,13 @@ $(function () {
   });
 
   $("#all_off").on('mousedown', function (e) {
-    $(".ledbtn.on").removeClass("on").addClass("transmit");
+    $(".ledbtn.on").removeClass("on");//addClass("transmit");
+    socket.emit("allOff");
   });
 
   $("#all_on").on('mousedown', function (e) {
-    $(".ledbtn").not(".on").addClass("on").addClass("transmit");
-
-//    for (var j = 0; j <= 40; j++) {
-//      for (var i = 0; i <= 62; i++) {
-//          $("#"+i+"_"+j).not(".on").addClass("on").addClass("transmit");
-////        }, i*j);
-//        }
-//      }
+    $(".ledbtn").not(".on").addClass("on");//.addClass("transmit");
+    socket.emit("allOn");
   });
 
 //  $("#get_ping").on('click tap', function (e) {
@@ -127,6 +122,6 @@ $(function () {
       $(this).removeClass("transmit");
       socket.emit(($(this).hasClass("on") ? 'turnOn' : 'turnOff'), [$(this).data("position").x, $(this).data("position").y]);
     })
-  }, 40); //transmit at 25fps
+  }, 100); //transmit at 10fps
 
 });

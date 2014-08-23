@@ -154,6 +154,15 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  socket.on("allOff", function(data)
+  {
+    if (debug) console.log("TODO: All leds should turn OFF now");
+  });
+
+  socket.on("allOn", function(data)
+  {
+    if (debug) console.log("TODO: All leds should turn ON now");
+  });
 
   socket.on('getPing', function(data) {
 		if(debug) console.log("socket trigger 'getPing' >> data: ", data);
