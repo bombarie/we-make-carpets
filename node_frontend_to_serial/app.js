@@ -157,23 +157,29 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on("allOn", function(data) {
-    if (debug) console.log("TODO: All leds should turn ON now");
+    if (debug) console.log("turn all leds on");
 
     var toSend = new Buffer(3);
     toSend[0] = 253; // 253 = all on
     toSend[1] = 0;   // void data
     toSend[2] = 0;   // void data
 
+    if (serialConnected) serialPort.write(toSend, function(err) {
+      if (err) if(debug) console.log("serial write err: " + err);
+    });
   });
 
   socket.on("allOff", function(data) {
-    if (debug) console.log("TODO: All leds should turn OFF now");
+    if (debug) console.log("turn all leds off");
 
     var toSend = new Buffer(3);
     toSend[0] = 252;  // 252 = all on
     toSend[1] = 32;   // void data
     toSend[2] = 32;   // void data
 
+    if (serialConnected) serialPort.write(toSend, function(err) {
+      if (err) if(debug) console.log("serial write err: " + err);
+    });
   });
 
   socket.on('getPing', function(data) {
