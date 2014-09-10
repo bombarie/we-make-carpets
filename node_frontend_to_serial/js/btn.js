@@ -1,12 +1,10 @@
-var Btn = function(data)
-{
+var Btn = function(data) {
   this.init(data);
 }
 
 Btn.prototype = {
 
-  init: function(data)
-  {
+  init: function(data) {
     var _this = this;
     _this.settings = data;
 

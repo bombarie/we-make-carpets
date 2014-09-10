@@ -1,3 +1,9 @@
+/*
+
+    SOCKETIO STUFF
+
+*/
+
 var socket = io.connect(window.location.hostname + ":1337");
 
 socket.on('pingBack', function (msg) {
@@ -26,47 +32,55 @@ socket.on('connect', function () {
   console.log('connected');
 });
 
-var buttonStates = [
-  []
-];
 
 
+
+/*
+
+    GENERATE MATRIX
+
+ */
 
 function generateButtons(numX, numY) {
   console.log("f:generateButtons() >> numX: " + numX + ", numY: " + numY);
-  // or a different approach..
-  /*
-   for (var i = 0; i < numX; i++) {
-   for (var j = 0; j < numY; j++) {
-   buttonStates [x][y] = 0;
-   }
-   }
-   //*/
 
   for (var j = 0; j < numY; j++) {
+
+    // create a new row
     var $row = $("<div class='row clearfix'></div>");
+
     for (var i = 0; i < numX; i++) {
-	 
-		// console.log("conversion["+(j)+"]["+(i)+ "] = " + conversion[j][i]);
-	 
-	  var _class = (conversion[j][i]? "ledbtn" : "ledbtn small");
+
+      // choose the class of the element according to the design of the led matrix (see conversion.js)
+  	  var _class = (conversion[j][i]? "ledbtn" : "ledbtn small");
 
       var $div = $("<div id='"+i+"_"+j+"'  class='" + _class + "'><span class='debug'>" + i + "," + j + "</span></div>");
       $div.data("position", { x:i, y:j });
+
+      // append new element to the row
       $row.append($div);
     }
+
+    // append the filled row to the button container div
     $("#buttonsContainer").append($row);
   }
 }
 
+/*
+
+    JQUERY INIT
+
+ */
 
 $(function () {
   console.log("ready");
 
   // generate matrix
+  console.log("begin generating buttons...");
   generateButtons(62, 40);
+  console.log("...end generating buttons");
 
-
+  // buttons event handlers
   $("#led_on").on('mousedown', function (e) {
     $("#led_off").removeClass("active");
     $(this).addClass("active");
@@ -78,30 +92,31 @@ $(function () {
   });
 
   $("#all_off").on('mousedown', function (e) {
-    $(".ledbtn.on").removeClass("on");//addClass("transmit");
+    console.log("btn pressed: turn all off");
+
+    $(".ledbtn.on").removeClass("on");
     socket.emit("allOff");
   });
 
   $("#all_on").on('mousedown', function (e) {
-    $(".ledbtn").not(".on").addClass("on");//.addClass("transmit");
+    console.log("btn pressed: turn all on");
+
+    $('.ledbtn').each(function() {
+      $(this).addClass("on");
+    });
     socket.emit("allOn");
   });
 
-//  $("#get_ping").on('click tap', function (e) {
-//    e.preventDefault();
-//    socket.emit('getPing', '');
-//    console.log("clicked on 'get ping'");
-//  });
 
   // Turn touches into drawing
-  $(document).on('touchmove',function(e){
+  $(document).on('touchmove',function(e) {
 
-    for(var i = 0; i < Math.min(e.originalEvent.touches.length, 2); i++)
-    {
+    for(var i = 0; i < Math.min(e.originalEvent.touches.length, 2); i++) {
+
       var t = e.originalEvent.touches[i];
       var pos = {
-                x: 1 + Math.floor((t.clientX - 6)/26),
-                y: 1 + Math.floor((t.clientY - 112)/26)
+                x: 1 + Math.floor((t.clientX - 6)/26),  // 6 = left-offset of #buttonsContainer
+                y: 1 + Math.floor((t.clientY - 112)/26) // 112 = top-offset of #buttonsContainer
               };
       var $btn = $("#" + pos.x + "_" + pos.y);
 //    console.log(t.target);
@@ -109,19 +124,27 @@ $(function () {
       if ($("#led_on").hasClass("active")) $btn.addClass('on').addClass("transmit");
       else $btn.removeClass('on').addClass("transmit");
     }
+
     // don't scroll the page
     e.preventDefault();
+
   });
 
 
-  // Transmit the data
-  var transmit = setInterval(function()
-  {
-    $(".ledbtn.transmit").each(function()
-    {
+  /**
+   * Transmit the data
+   *
+   * looks for elements with the class 'transmit'. These elements will not have been updated to the Node backend yet
+   * returns false after the first run to only process one of these elements at a time. This way we can control the speed
+   * of sending, which is probably a good thing w.r.t. the serial bandwidth between Node.js and the Arduino
+  */
+  var transmit = setInterval(function() {
+    $(".ledbtn.transmit").each(function() {
+      console.log("transmit interval... ");
       $(this).removeClass("transmit");
       socket.emit(($(this).hasClass("on") ? 'turnOn' : 'turnOff'), [$(this).data("position").x, $(this).data("position").y]);
+      return false;
     })
-  }, 100); //transmit at 10fps
+  }, 1000 / 20); //transmit at 20fps
 
 });
