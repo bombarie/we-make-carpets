@@ -116,6 +116,19 @@ serialPort.on("open", function () {
 });
 
 
+
+//==========================================================
+// Send a Buffer object to Arduino via serial connection
+//==========================================================
+function sendToArduino(buffer) {
+  console.log("f:sendToArduino()");
+
+  if (serialConnected) serialPort.write(buffer, function(err) {
+    if (err) if(debug) console.log("serial write err: " + err);
+  });
+}
+
+
 //==========================================================
 // Create Socket.io instance
 // Set up eventhandlers
@@ -138,9 +151,7 @@ io.sockets.on('connection', function (socket) {
     toSend[1] = data[0] + VALUES_OFFSET;  // column (anode) data
     toSend[2] = data[1] + VALUES_OFFSET;  // row (cathode) data
 
-    if (serialConnected) serialPort.write(toSend, function(err) {
-      if (err) if(debug) console.log("serial write err: " + err);
-    });
+    sendToArduino(toSend);
   });
 
   socket.on('turnOff', function(data) {
@@ -151,9 +162,7 @@ io.sockets.on('connection', function (socket) {
     toSend[1] = data[0] + VALUES_OFFSET;  // column (anode) data
     toSend[2] = data[1] + VALUES_OFFSET;  // row (cathode) data
 
-    if (serialConnected) serialPort.write(toSend, function(err) {
-      if (err) if(debug) console.log("serial write err: " + err);
-    });
+    sendToArduino(toSend);
   });
 
   socket.on("allOn", function(data) {
@@ -164,9 +173,7 @@ io.sockets.on('connection', function (socket) {
     toSend[1] = 0;   // void data
     toSend[2] = 0;   // void data
 
-    if (serialConnected) serialPort.write(toSend, function(err) {
-      if (err) if(debug) console.log("serial write err: " + err);
-    });
+    sendToArduino(toSend);
   });
 
   socket.on("allOff", function(data) {
@@ -174,12 +181,10 @@ io.sockets.on('connection', function (socket) {
 
     var toSend = new Buffer(3);
     toSend[0] = 252;  // 252 = all on
-    toSend[1] = 32;   // void data
-    toSend[2] = 32;   // void data
+    toSend[1] = 0;   // void data
+    toSend[2] = 0;   // void data
 
-    if (serialConnected) serialPort.write(toSend, function(err) {
-      if (err) if(debug) console.log("serial write err: " + err);
-    });
+    sendToArduino(toSend);
   });
 
   socket.on('getPing', function(data) {

@@ -193,6 +193,6 @@ $(function () {
       socket.emit(($(this).hasClass("on") ? 'turnOn' : 'turnOff'), [$(this).data("position").x, $(this).data("position").y]);
       return false;
     })
-  }, 1000 / 20); //transmit at 20fps
+  }, 1000 / 10); //transmit at 10fps
 
 });
