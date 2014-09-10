@@ -84,7 +84,7 @@ $(function () {
   generateButtons(62, 40);
   console.log("...end generating buttons");
 
-  /* als je happy bent met de Hammer oplossing dan mag deze weg.
+  //* als je happy bent met de Hammer oplossing dan mag deze weg.
    // buttons event handlers
    $("#led_on").on('mouseover touchend', function (e) {
    $("#led_off").removeClass("active");
@@ -113,7 +113,7 @@ $(function () {
    });
    //*/
 
-  //*
+  /*
   // buttons event handlers
   Hammer($("#led_on")[0], hammerOptions).on("tap", function (e) {
     //   $("#led_on").on('mouseover touchend', function (e) {
