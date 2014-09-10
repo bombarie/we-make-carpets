@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-var socketio	= require('socket.io');
 var http	= require('http');
+var socketio	= require('socket.io');
 var path 	= require('path');
 var serialport = require("serialport");
 var express	= require('express');
@@ -12,7 +12,7 @@ var debug = true;
 //==========================================================
 // Set default IP and used ports
 //==========================================================
-var IP = '127.0.0.1';
+var IP = '127.0.0.1'; // used.. where?
 var HTTP_PORT = 1337;
 var BAUDRATE = 57600;
 var ARDUINO = "";
@@ -35,6 +35,9 @@ if(debug) console.log("Detected system is " + BASE_OS);
 if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbmodemfa141";
 if (BASE_OS == LINUX) ARDUINO = "/dev/ttyATH0";
 
+// this offset will me employed when sending serial data as a way to avoid accidentally sending the number 10 or 13 (ascii LF and CR)
+var VALUES_OFFSET = 32;
+
 //==========================================================
 // Initiate Express
 // Don't do anything 'fancy' with renderers, just
@@ -43,6 +46,7 @@ if (BASE_OS == LINUX) ARDUINO = "/dev/ttyATH0";
 //==========================================================
 var app = express();
 app.use(express.static(__dirname));
+
 
 //==========================================================
 // Create http server
@@ -54,6 +58,7 @@ server.listen(HTTP_PORT);
 if(debug) console.log("server listening at port " + HTTP_PORT);
 
 var io = socketio.listen(server);
+//var io = socketio(server);
 if(!debug) io.set('log level', 0);
 
 
@@ -101,18 +106,15 @@ serialPort.on("open", function () {
 
   // Test that serialport is working.
   // For now that entails requesting the Arduino's current ping count
-  console.log("  Serial test >> writing a 1-byte buffer containing the number 33 to Arduino");
-  var b = new Buffer(1);
-  b[0] = 33;
-  serialPort.write(b, function(err, results) {
-    console.log('    err ' + err);
-    console.log('    results ' + results);
-  });
+//  console.log("  Serial test >> writing a 1-byte buffer containing the number 33 to Arduino");
+//  var b = new Buffer(1);
+//  b[0] = 33;
+//  serialPort.write(b, function(err, results) {
+//    console.log('    err ' + err);
+//    console.log('    results ' + results);
+//  });
 });
 
-
-// this offset is so we don't accidentally send the number 10 or 13 (ascii LR and CR)
-var LedNumberOffset = 32;
 
 //==========================================================
 // Create Socket.io instance
@@ -132,9 +134,9 @@ io.sockets.on('connection', function (socket) {
     if(debug) console.log("turn on led ", data);
 
     var toSend = new Buffer(3);
-    toSend[0] = 255;
-    toSend[1] = data[0] + 32;
-    toSend[2] = data[1] + 32;
+    toSend[0] = 255;                      // 255 = turn on
+    toSend[1] = data[0] + VALUES_OFFSET;  // column (anode) data
+    toSend[2] = data[1] + VALUES_OFFSET;  // row (cathode) data
 
     if (serialConnected) serialPort.write(toSend, function(err) {
       if (err) if(debug) console.log("serial write err: " + err);
@@ -145,23 +147,33 @@ io.sockets.on('connection', function (socket) {
     if(debug) console.log("turn off led ", data);
 
     var toSend = new Buffer(3);
-    toSend[0] = 254;
-    toSend[1] = data[0] + 32;
-    toSend[2] = data[1] + 32;
+    toSend[0] = 254;                      // 254 = turn off
+    toSend[1] = data[0] + VALUES_OFFSET;  // column (anode) data
+    toSend[2] = data[1] + VALUES_OFFSET;  // row (cathode) data
 
     if (serialConnected) serialPort.write(toSend, function(err) {
       if (err) if(debug) console.log("serial write err: " + err);
     });
   });
 
-  socket.on("allOff", function(data)
-  {
-    if (debug) console.log("TODO: All leds should turn OFF now");
+  socket.on("allOn", function(data) {
+    if (debug) console.log("TODO: All leds should turn ON now");
+
+    var toSend = new Buffer(3);
+    toSend[0] = 253; // 253 = all on
+    toSend[1] = 0;   // void data
+    toSend[2] = 0;   // void data
+
   });
 
-  socket.on("allOn", function(data)
-  {
-    if (debug) console.log("TODO: All leds should turn ON now");
+  socket.on("allOff", function(data) {
+    if (debug) console.log("TODO: All leds should turn OFF now");
+
+    var toSend = new Buffer(3);
+    toSend[0] = 252;  // 252 = all on
+    toSend[1] = 32;   // void data
+    toSend[2] = 32;   // void data
+
   });
 
   socket.on('getPing', function(data) {
