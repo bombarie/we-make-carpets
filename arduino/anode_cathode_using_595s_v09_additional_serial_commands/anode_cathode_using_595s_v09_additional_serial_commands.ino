@@ -107,9 +107,8 @@
 
 #include "SPI.h" // necessary library
 
-//#define USE_SPI
+#define USE_SPI
 #define FAST_ANODE_SHIFTING
-//#define POOR_MANS_FADING
 //#define CYCLE_ANODES_SLOWLY
 
 // Anode shift register pins
@@ -132,6 +131,7 @@ unsigned long whichColumn;     // used for shifting out the anode column high-bi
 byte row_data[62][5];
 
 // variables for the blinking delay
+int ledPin = 13;        // LED pin
 int blinkInterval;
 long prevBlink;
 boolean ledState;
@@ -143,29 +143,19 @@ uint16_t counter = 0;
 // this offset is so we don't accidentally send the number 10 or 13 (ascii LR and CR)
 byte ledNumberOffset = 32; 
 
-// some variables pertaining to an experimental poor-man's fading (called bit-angling)
-byte skipNum = 0;
-byte skipCounter = 0;
-long prevSkipInterval;
-uint16_t skipInterval = 35; // ms
-
-
 #ifdef USE_SPI
-  int ss = 10; // 10; // using digital pin 10 for SPI slave select
+  int ss = 7; // using digital pin 7 for SPI slave select (ie latch)
   int __mosi = 16; // 16 (according to the spec)
   int __sck = 15; // 10; // using digital pin 10 for SPI slave select
   #define SHIFT_REGISTER DDRB
   #define SHIFT_PORT PORTB
-//  #define DATA               _BV(MOSI)         // direct name of MOSI (on ICSP header)
-  #define DATA               _BV(PORTB2)         // direct name of MOSI (on ICSP header)
-//  #define LATCH              _BV(PORTB0)     // direct name of digital pin 8 (SS))
-  #define LATCH              _BV(PORTB6) // or PORTB6 for digital out 10       // direct name of digital pin 10 (SPI RCK)
-//  #define CLOCK              _BV(SCK)          // direct name of SCK (on ICSP header)
-  #define CLOCK              _BV(PORTB1)          // direct name of SCK (on ICSP header)
+  #define rows_data          _BV(PORTB2)        // direct name of MOSI (on ICSP header)
+  #define rows_latch         _BV(PORTE6)        // digital pin 7
+  #define rows_clock         _BV(PORTB1)        // direct name of SCK (on ICSP header)
 #else
-  #define rows_data          _BV(PORTB4)        // digital pin 8  // instead of MOSI: digital pin 11
-  #define rows_latch         _BV(PORTB5)        // digital pin 9  // instead of SS  : digital pin 10
-  #define rows_clock         _BV(PORTB6)        // digital pin 10  // instead of SCK : digital pin 9
+  #define rows_data          _BV(PORTB2)        // ISCP MOSI
+  #define rows_latch         _BV(PORTE6)        // digital pin 7
+  #define rows_clock         _BV(PORTB1)        // ICSP SCK
 #endif
   #define cols_output_enable  _BV(PORTC6)       // direct name of digital pin 5
   #define rows_output_enable  _BV(PORTD7)       // direct name of digital pin 6
@@ -177,8 +167,8 @@ uint16_t skipInterval = 35; // ms
 */
 
 void setup() {
-  Serial.begin(57600);  // serial monitor (to outside world)
-  Serial1.begin(9600);  // internal Serial (to node.js)
+//  Serial.begin(57600);  // serial monitor (to outside world)
+  Serial1.begin(57600);  // internal Serial (to node.js)
   // while (!Serial) {} // wait for serial port to connect. Needed for Leonardo only
 
   //set PORTD pins as output (anode columns)
@@ -210,6 +200,15 @@ void setup() {
   _before = micros();
 
 
+  /*
+  
+    DEBUG FOR LED BLINKING
+    
+  */
+  blinkInterval = 500; // ms
+  prevBlink = millis();
+  ledState = true;
+  
   // set all the row_data  
   for (byte col = 0; col < 62; col++) {
     for (byte rowByte = 0; rowByte < 5; rowByte++) {
@@ -225,12 +224,11 @@ void setup() {
   }
   
   // turn on the leds in the corners
-  turnOn(0, 0);   // corner
-  turnOn(13, 0);  // corner
-  turnOn(13, 13); // corner
-  turnOn(0, 13);  // corner
+//  turnOn(0, 0);   // corner
+//  turnOn(13, 0);  // corner
+//  turnOn(13, 13); // corner
+//  turnOn(0, 13);  // corner
 
-  prevSkipInterval = millis();
 }
 
 
@@ -245,57 +243,19 @@ void setup() {
 void loop() {
   Serial1Reading();
   /*
-  // Serial for external connection
-  if (Serial.available() > 0) {
-    byte in = Serial.read() - ledNumberOffset; // ascii 48 = 0, ascii 49 = 1, etc.
-    if (in == 223) { // turn on
-      byte _col = Serial.read() - ledNumberOffset;
-      byte _row = Serial.read() - ledNumberOffset;
-      turnOn(_col, _row);
-      skipNum = 8; // used for a poor-man's fading effect (*if* we're using that..)
-      Serial.print("led on: ["); Serial.print(_col); Serial.print(","); Serial.print(_row); Serial.println("]");
-    }
-    if (in == 222) { // turn off
-      byte _col = Serial.read() - ledNumberOffset;
-      byte _row = Serial.read() - ledNumberOffset;
-      turnOff(_col, _row);
-      skipNum = 8; // used for a poor-man's fading effect (*if* we're using that..)
-      Serial.print("led off: ["); Serial.print(_col); Serial.print(","); Serial.print(_row); Serial.println("]");
-    }
+  
+      DEBUG - BLINKING LED PIN 13
+  
+  */
+  // blink according to a set interval
+  if (millis() - prevBlink > blinkInterval) {
+    digitalWrite(ledPin, ledState);
 
-    // If bytes in the Serial pipe, flush 'em out
-    while(Serial.available() > 0) Serial.read();
+    ledState = !ledState;
+
+    prevBlink = millis();
   }
-
-  // Serial1 for internal connection (ie from node.js on Yun)
-  // TODO -> This triggers for every byte!! So with 3 bytes it triggers three times. Bad Serial1!
-  //         So, todo: make a smarter parser that builds up the message bit by bit and parses/executes it when complete
-  if (Serial1.available() > 2) {
-    Serial.print("size of serial: "); Serial.println(Serial1.available());
-    
-    byte in = Serial1.read();
-    Serial.print("in: "); Serial.println(in);
-    in -= ledNumberOffset; // ascii 48 = 0, ascii 49 = 1, etc.
-    if (in == 223) { // turn on
-      byte _col = Serial1.read() - ledNumberOffset;
-      byte _row = Serial1.read() - ledNumberOffset;
-      turnOn(_col, _row);
-      skipNum = 8; // used for a poor-man's fading effect (*if* we're using that..)
-//      Serial1.print("led on: ["); Serial1.print(_col); Serial1.print(","); Serial1.print(_row); Serial1.println("]");
-    }
-    if (in == 222) { // turn off
-      byte _col = Serial1.read() - ledNumberOffset;
-      byte _row = Serial1.read() - ledNumberOffset;
-      turnOff(_col, _row);
-      skipNum = 8; // used for a poor-man's fading effect (*if* we're using that..)
-//      Serial1.print("led off: ["); Serial1.print(_col); Serial1.print(","); Serial1.print(_row); Serial1.println("]");
-    }
-
-    // If bytes in the Serial pipe, flush 'em out
-    while(Serial1.available() > 0) Serial1.read();
-  }
-  //*/
-
+  
 #ifdef CYCLE_ANODES_SLOWLY
   // DEBUG
   //  Cycle through the anode columns slower. Sometimes handy to better see what the code is doing
@@ -326,21 +286,6 @@ void loop() {
     
   */  
 
-#ifdef POOR_MANS_FADING
-  if (skipNum > 0) {
-    skipCounter++;
-  }
-  if (skipCounter >= skipNum) {
-
-    setRow(currColumn);                       // drive cathode rows
-    PORTD |= rows_output_enable;              // CATHODE  turn high (means lights off)
-    setColumn(currColumn);                    // drive anode columns
-    PORTD &= ~rows_output_enable;             // CATHODE  turn low (means lights on)
-    
-    skipCounter = 0;
-  }
-#else
-
   setRow(currColumn);                       // drive cathode rows
 
 //  PORTC |= cols_output_enable;            // ANODE turn high (means lights off)
@@ -353,18 +298,6 @@ void loop() {
 
 #endif
 
-#endif
-
-
-  /*
-  currColumn++;                            // increase column
-  if (currColumn > 61) currColumn = 0;     // if at column 62, reset to 0
-  setColumn(currColumn);                   // drive anode columns
-  setRow(currColumn);                      // drive cathode rows
-  //*/
-
-  //*
-  //*/
 
   /*
   // DEBUG
@@ -379,14 +312,6 @@ void loop() {
   }
   //*/
   
-#ifdef POOR_MANS_FADING
-  if (millis() - prevSkipInterval > skipInterval) {
-    if (skipNum > 0) skipNum--;
-    
-    prevSkipInterval = millis();
-  }
-#endif
-
 }
 
 
@@ -395,11 +320,8 @@ void Serial1Reading() {
   // TODO -> This triggers for every byte!! So with 3 bytes it triggers three times. Bad Serial1!
   //         So, todo: make a smarter parser that builds up the message bit by bit and parses/executes it when complete
   if (Serial1.available() > 2) {
-//    Serial.print("size of serial: "); Serial.println(Serial1.available());
     
     byte in = Serial1.read();
-//    Serial.print("in: "); Serial.println(in);
-//    in -= ledNumberOffset; // ascii 48 = 0, ascii 49 = 1, etc.
     if (in == 255) { // turn on
       byte _col = Serial1.read() - ledNumberOffset;
       byte _row = Serial1.read() - ledNumberOffset;
@@ -408,13 +330,11 @@ void Serial1Reading() {
       blinkInterval = (_col * 20) + 50;
       
       turnOn(_col, _row);
-//      Serial1.print("led on: ["); Serial1.print(_col); Serial1.print(","); Serial1.print(_row); Serial1.println("]");
     }
     if (in == 254) { // turn off
       byte _col = Serial1.read() - ledNumberOffset;
       byte _row = Serial1.read() - ledNumberOffset;
       turnOff(_col, _row);
-//      Serial1.print("led off: ["); Serial1.print(_col); Serial1.print(","); Serial1.print(_row); Serial1.println("]");
     }
 
     if (in == 253) { // turn all on
@@ -467,12 +387,11 @@ void turnOff(byte _col, byte _row) {
 void setColumn(byte c) {
   PORTD &= ~cols_latch;      // latch low
   
-  // If at first position shift out a 0, otherwise a 1 (this is inverted logic since I'm using PNP transistors
-  // and driving a PNP high means no current and vice versa
+  // If at first position shift out a 1, otherwise a 0's
   if (c == 0) {
-    PORTD &= ~cols_data;     // data 0 (which becomes a high output because I'm using PNP transistors
+    PORTD |= cols_data;      // data 1
   } else {
-    PORTD |= cols_data;      // data 1 (which becomes a low output because I'm using PNP transistors
+    PORTD &= ~cols_data;     // data 0
   }
   
   PORTD |= cols_clock;       // clock high
@@ -511,7 +430,7 @@ void setColumn(byte c) {
 
 #ifdef USE_SPI
 void setRow(byte col) {
-  PORTB &= ~LATCH; // PORTB2 / SPI SS low
+  PORTE &= ~rows_latch; // PORTE6 / SPI SS low
 
   // SPI.transfer(0); // send command byte <-- WHAT'S THIS REALLY FOR???
   SPI.transfer(~row_data[col][4]);  // send value (0~255), rows 32-39
@@ -520,29 +439,19 @@ void setRow(byte col) {
   SPI.transfer(~row_data[col][1]);  // send value (0~255), rows 08-15
   SPI.transfer(~row_data[col][0]);  // send value (0~255), rows 00-07
 
-  PORTB |= LATCH; // PORTB2 / SPI SS high
+  PORTE |= rows_latch; // PORTE6 / SPI SS high
 }
 #else
 void setRow(byte col) {
-  PORTB &= ~rows_latch;   // latch low
+  PORTE &= ~rows_latch;   // latch low
 
-  //*
   myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, ~row_data[col][4]);  // rows 32-39
   myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, ~row_data[col][3]);  // rows 24-31
   myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, ~row_data[col][2]);  // rows 16-23
   myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, ~row_data[col][1]);  // rows 08-15
   myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, ~row_data[col][0]);  // rows 00-07
-  //*/
-  /*
-  byte b = ~B10101010;
-  myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, b);  // rows 32-39
-  myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, b);  // rows 24-31
-  myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, b);  // rows 16-23
-  myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, b);  // rows 08-15
-  myShiftOutRows_fast(rows_data, rows_clock, MSBFIRST, b);  // rows 00-07
-  //*/
 
-  PORTB |= rows_latch;    // latch high
+  PORTE |= rows_latch;    // latch high
 }
 #endif
 

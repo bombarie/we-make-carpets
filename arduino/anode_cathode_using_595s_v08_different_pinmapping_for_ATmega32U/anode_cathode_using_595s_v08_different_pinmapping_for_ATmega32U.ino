@@ -167,8 +167,8 @@ uint16_t skipInterval = 35; // ms
 */
 
 void setup() {
-  Serial.begin(57600);
-  Serial1.begin(9600);
+  Serial.begin(57600);  // serial monitor (to outside world)
+  Serial1.begin(9600);  // internal Serial (to node.js)
   // while (!Serial) {} // wait for serial port to connect. Needed for Leonardo only
 
   //set PORTD pins as output (anode columns)
@@ -233,6 +233,8 @@ void setup() {
 */
 
 void loop() {
+  Serial1Reading();
+  /*
   // Serial for external connection
   if (Serial.available() > 0) {
     byte in = Serial.read() - ledNumberOffset; // ascii 48 = 0, ascii 49 = 1, etc.
@@ -282,6 +284,7 @@ void loop() {
     // If bytes in the Serial pipe, flush 'em out
     while(Serial1.available() > 0) Serial1.read();
   }
+  //*/
 
 #ifdef CYCLE_ANODES_SLOWLY
   // DEBUG
@@ -374,6 +377,46 @@ void loop() {
   }
 #endif
 
+}
+
+
+void Serial1Reading() {
+  // Serial1 for internal connection (ie from node.js on Yun)
+  // TODO -> This triggers for every byte!! So with 3 bytes it triggers three times. Bad Serial1!
+  //         So, todo: make a smarter parser that builds up the message bit by bit and parses/executes it when complete
+  if (Serial1.available() > 2) {
+//    Serial.print("size of serial: "); Serial.println(Serial1.available());
+    
+    byte in = Serial1.read();
+//    Serial.print("in: "); Serial.println(in);
+//    in -= ledNumberOffset; // ascii 48 = 0, ascii 49 = 1, etc.
+    if (in == 255) { // turn on
+      byte _col = Serial1.read() - ledNumberOffset;
+      byte _row = Serial1.read() - ledNumberOffset;
+      
+      // DEBUG
+      blinkInterval = (_col * 20) + 50;
+      
+      turnOn(_col, _row);
+//      Serial1.print("led on: ["); Serial1.print(_col); Serial1.print(","); Serial1.print(_row); Serial1.println("]");
+    }
+    if (in == 254) { // turn off
+      byte _col = Serial1.read() - ledNumberOffset;
+      byte _row = Serial1.read() - ledNumberOffset;
+      turnOff(_col, _row);
+//      Serial1.print("led off: ["); Serial1.print(_col); Serial1.print(","); Serial1.print(_row); Serial1.println("]");
+    }
+
+    if (in == 253) { // turn all on
+      blinkInterval = 25;
+    }
+    if (in == 252) { // turn all off
+      blinkInterval = 500;
+    }
+
+    // If bytes in the Serial pipe, flush 'em out
+    while(Serial1.available() > 0) Serial1.read();
+  }
 }
 
 /*

@@ -32,7 +32,8 @@ if (process.platform == 'linux') {
 }
 if(debug) console.log("Detected system is " + BASE_OS);
 
-if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbmodemfa141";
+//if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbmodemfa141"; // Uno
+if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbserial-A600eBhm"; // Duemilanove
 if (BASE_OS == LINUX) ARDUINO = "/dev/ttyATH0";
 
 // this offset will me employed when sending serial data as a way to avoid accidentally sending the number 10 or 13 (ascii LF and CR)
