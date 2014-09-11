@@ -91,6 +91,8 @@ function startSerial(callback) {
     if(debug) console.log('Serial port opened >> system is ' + BASE_OS + ", portname '" + ARDUINO + "'");
     serialConnected = true;
 
+    doArduinoHandshake();
+
     serialPort.on('data', function(data) {
       if(debug) console.log('serial data received: ' + data);
     });
@@ -98,6 +100,19 @@ function startSerial(callback) {
 }
 startSerial();
 
+
+//==========================================================
+// Start a handshake to the Arduino
+//==========================================================
+function doArduinoHandshake() {
+
+  var toSend = new Buffer(3);
+  toSend[0] = 250;
+  toSend[1] = 230;
+  toSend[2] = 210;
+
+  sendToArduino(toSend);
+}
 
 
 //==========================================================
