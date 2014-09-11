@@ -81,7 +81,7 @@ $(function () {
 
   // generate matrix
   console.log("begin generating buttons...");
-  generateButtons(62, 40);
+//  generateButtons(62, 40);
   console.log("...end generating buttons");
 
   //* als je happy bent met de Hammer oplossing dan mag deze weg.
@@ -188,11 +188,11 @@ $(function () {
    */
   var transmit = setInterval(function () {
     $(".ledbtn.transmit").each(function () {
-      console.log("transmit interval... ");
+//      console.log("transmit interval... ");
       $(this).removeClass("transmit");
-      socket.emit(($(this).hasClass("on") ? 'turnOn' : 'turnOff'), [$(this).data("position").x, $(this).data("position").y]);
+      socket.emit(($(this).hasClass("on") ? 'turnOff' : 'turnOn'), [$(this).data("position").x, $(this).data("position").y]);
       return false;
     })
-  }, 1000 / 10); //transmit at 10fps
+  }, 1000 / 50); //transmit at 50fps
 
 });

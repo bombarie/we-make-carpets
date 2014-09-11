@@ -7,7 +7,7 @@ var serialport = require("serialport");
 var express	= require('express');
 
 
-var debug = true;
+var debug = false;
 
 //==========================================================
 // Set default IP and used ports

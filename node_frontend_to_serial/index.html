@@ -8,14 +8,21 @@
   <!--<meta name="viewport" content="user-scalable=no, width=device-width">-->
 
   <link href="css/only.css" rel="stylesheet">
+  <link href="css/btns.css" rel="stylesheet">
 </head>
 <body class="body">
-
+<div class="clearfix newbuttonsContainer">
+  <div class="clearfix onOffContainer">
+    <div class="btnn erase">erase</div>
+    <div class="btnn draw active">draw</div>
+  </div>
+</div>
 <div class="clearfix" id="topButtonsContainer">
-  <div id="led_on" class="btn active">&nbsp;</div>
-  <div id="led_off" class="btn">&nbsp;</div>
-  <div id="all_off" class="btn">UIT</div>
-  <div id="all_on" class="btn">AAN</div>
+  <div id="led_on" class="btn drawerase">erase</div>
+  <div id="led_off" class="btn drawerase active">draw</div>
+  <div class="spacer">&nbsp;</div>
+  <div id="all_off" class="btn">all off</div>
+  <div id="all_on" class="btn">all on</div>
 </div>
 
 <div id="buttonsContainer" class="clearfix"></div>
