@@ -81,7 +81,7 @@ $(function () {
 
   // generate matrix
   console.log("begin generating buttons...");
-//  generateButtons(62, 40);
+  generateButtons(62, 40);
   console.log("...end generating buttons");
 
   //* als je happy bent met de Hammer oplossing dan mag deze weg.
