@@ -11,6 +11,7 @@
 -- v09
   - added more to the Serial1 in commands. Moved Serial1 reading to a separate method
     for a cleaner loop() method.
+  - cleanup up a lot of code. Removed the poor man's pwm
 
 -- v08
   - adjust pinmappings for the data, latch and clock pins as those are placed 
@@ -105,6 +106,33 @@
   
 */
 
+/*
+           _                   __      
+    ____  (_)___  ____  __  __/ /______
+   / __ \/ / __ \/ __ \/ / / / __/ ___/
+  / /_/ / / / / / /_/ / /_/ / /_(__  ) 
+ / .___/_/_/ /_/\____/\__,_/\__/____/  
+/_/                                    
+
+ 
+  Anode plug (op de PCB de ROW_INPUT)
+    PIN ON PLUG    STRAND COLOR     PORT ON ARDUINO    NAME OF PIN
+    pin 1          (green)          -                  not connected
+    pin 2          yellow           pin 4              SRCLK (clock)
+    pin 3          orange           pin 3              RCLK (latch)
+    pin 4          red              pin 5              ~OE (output enable - active low)
+    pin 5          brown            pin 2              SERIAL IN (data)
+  
+  Cathode plug (op de PCB de COL_INPUT)
+    PIN ON PLUG    STRAND COLOR     PORT ON ARDUINO    NAME OF PIN
+    pin 1          (green)          -                  not connected
+    pin 2          yellow           SCK (ICSP)         SRCLK (clock)
+    pin 3          orange           pin 7              RCLK (latch)
+    pin 4          red              pin 6              ~OE (output enable - active low)
+    pin 5          brown            MOSI (ICSP)        SERIAL IN (data)
+  
+*/
+
 #include "SPI.h" // necessary library
 
 #define USE_SPI
@@ -112,9 +140,9 @@
 //#define CYCLE_ANODES_SLOWLY
 
 // Anode shift register pins
-#define cols_data   _BV(PORTD1) // direct name of digital pin 2
-#define cols_latch  _BV(PORTD0) // direct name of digital pin 3
-#define cols_clock  _BV(PORTD4) // direct name of digital pin 4
+#define cols_data   _BV(PORTD1) // digital pin 2
+#define cols_latch  _BV(PORTD0) // digital pin 3
+#define cols_clock  _BV(PORTD4) // digital pin 4
 
 long prevClick;
 int clickInterval = 100;
@@ -149,16 +177,18 @@ byte ledNumberOffset = 32;
   int __sck = 15; // 10; // using digital pin 10 for SPI slave select
   #define SHIFT_REGISTER DDRB
   #define SHIFT_PORT PORTB
-  #define rows_data          _BV(PORTB2)        // direct name of MOSI (on ICSP header)
+  #define rows_data          _BV(PORTB2)        // MOSI (on ICSP header)
   #define rows_latch         _BV(PORTE6)        // digital pin 7
-  #define rows_clock         _BV(PORTB1)        // direct name of SCK (on ICSP header)
+  #define rows_clock         _BV(PORTB1)        // SCK (on ICSP header)
 #else
-  #define rows_data          _BV(PORTB2)        // ISCP MOSI
+  #define rows_data          _BV(PORTB2)        // MOSI (on ICSP header)
   #define rows_latch         _BV(PORTE6)        // digital pin 7
-  #define rows_clock         _BV(PORTB1)        // ICSP SCK
+  #define rows_clock         _BV(PORTB1)        // SCK (on ICSP header)
 #endif
-  #define cols_output_enable  _BV(PORTC6)       // direct name of digital pin 5
-  #define rows_output_enable  _BV(PORTD7)       // direct name of digital pin 6
+  #define cols_output_enable _BV(PORTC6)        // digital pin 5
+  #define rows_output_enable _BV(PORTD7)        // digital pin 6
+
+
 
 /*
 
@@ -172,9 +202,9 @@ void setup() {
   // while (!Serial) {} // wait for serial port to connect. Needed for Leonardo only
 
   //set PORTD pins as output (anode columns)
+  DDRD |= cols_data;     // output / high
   DDRD |= cols_latch;    // output / high
   DDRD |= cols_clock;    // output / high
-  DDRD |= cols_data;     // output / high
 
 #ifdef USE_SPI
   // SPI stuff
@@ -185,9 +215,9 @@ void setup() {
   SPI.setBitOrder(MSBFIRST);             // the order in which bits are sent
 #else
   //set PORTB pins as output (cathode rows)
-  DDRB |= rows_latch;    // output / high
-  DDRB |= rows_clock;    // output / high
   DDRB |= rows_data;     // output / high
+  DDRE |= rows_latch;    // output / high
+  DDRB |= rows_clock;    // output / high
 #endif
   DDRD |= rows_output_enable;     // set pin as output
   PORTD &= ~rows_output_enable;   // turn low (means lights on)
@@ -261,30 +291,23 @@ void loop() {
   //  Cycle through the anode columns slower. Sometimes handy to better see what the code is doing
   if (millis() - prevClick > clickInterval) {
     currColumn++;                            // increase column
-    if (currColumn > 13) currColumn = 0;     // if at column 14, reset to 0 (just for debugging)
-
+    if (currColumn > 61) currColumn = 0;     //
+      
     PORTC |= cols_output_enable;             // turn high (means lights off)
-    PORTD |= rows_output_enable;        // turn high (means lights off)
+    PORTD |= rows_output_enable;             // turn high (means lights off)
 
-    setRow(currColumn);                 // drive cathode rows
+    setRow(currColumn);                      // drive cathode rows
 
-    setColumn(currColumn);              // drive anode columns
+    setColumn(currColumn);                   // drive anode columns
 
     PORTC &= ~cols_output_enable;            // turn low (means lights on)
-    PORTD &= ~rows_output_enable;       // turn low (means lights on)
+    PORTD &= ~rows_output_enable;            // turn low (means lights on)
 
     prevClick = millis();
   }
 #else
   currColumn++;                            // increase column
   if (currColumn > 61) currColumn = 0;     // if at column 62, reset to 0
-
-  /*
-    NOTES
-    - Met beide OE uit/aan zetten, mooiste beeld bij eerst anode en daarna cathode.
-      Levert wel VEEL lichtverlies op
-    
-  */  
 
   setRow(currColumn);                       // drive cathode rows
 
