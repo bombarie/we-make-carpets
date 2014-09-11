@@ -3,12 +3,20 @@ html,body {
   padding:0;
   height:100%;
   width:100%;
+  font-family: sans-serif;
 }
 
 body {
   background-color: white;
 }
 
+
+#topButtonsContainer {
+  width: 100%;
+  margin: 0 auto;
+  height: 4.5em;
+  /*display: table;*/
+}
 
 div.btn {
   float:left;
@@ -17,29 +25,43 @@ div.btn {
   color: #444;
   cursor: pointer;
   width: 128px;
-  height: 64px;
+  height: 100%;
   background-color: #eee;
   text-align: center;
-  font-family: sans-serif;
   margin: 8px;
+  padding: 5px;
+  line-height: 4.5em;
 }
 
-#topButtonsContainer {
-  width: 100%;
-  margin: 0 auto;
+div.spacer{
+  float:left;
+  width: 1px;
+  height: 100%;
+  margin: 15px;
+  background-color: #ccc;
+}
+
+div.btn.drawerase {
+  opacity: 0.5;
 }
 
 div.btn.active {
-  border-color: #999;
+  border-color: #8c8;
+  border-width: 5px;
+  padding: 1px;
+  opacity: 1.0;
+  background-color: #ccc !important;
+	-moz-box-shadow: 0 0 5px rgba(0, 255, 0, 0.65);
+	-webkit-box-shadow: 0 0 5px rgba(0, 255, 0, 0.65);
+	box-shadow: 0 0 5px rgba(0, 255, 0, 0.65);
 }
 
 #led_on {
-  background-color: black;
+  background-color: #444;
 }
 #led_off {
-  background-color: white;
+  background-color: #444;
 }
-
 
 #buttonsContainer {
   position: absolute;
@@ -49,6 +71,13 @@ div.btn.active {
 
 .row {
 }
+
+div.ledbtn.on {
+  background-color: black;
+  /*color: #888 !important;*/
+  color: #f0f !important;
+}
+
 
 div.ledbtn, div.smallledbtn {
   float:left;
@@ -80,11 +109,6 @@ div.ledbtn, div.smallledbtn {
 }
 
 div.ledbtn:active {
-}
-
-div.ledbtn.on {
-  background-color: black;
-  color: #888 !important;
 }
 
 div.small {

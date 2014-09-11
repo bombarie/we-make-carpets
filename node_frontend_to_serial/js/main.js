@@ -190,9 +190,9 @@ $(function () {
     $(".ledbtn.transmit").each(function () {
 //      console.log("transmit interval... ");
       $(this).removeClass("transmit");
-      socket.emit(($(this).hasClass("on") ? 'turnOff' : 'turnOn'), [$(this).data("position").x, $(this).data("position").y]);
+      socket.emit(($(this).hasClass("on") ? 'turnOff' : 'turnOn'), [ 62 - $(this).data("position").x, $(this).data("position").y]);
       return false;
     })
-  }, 1000 / 50); //transmit at 50fps
+  }, 1000 / 100); //transmit at 50fps
 
 });

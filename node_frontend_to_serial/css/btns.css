@@ -1,0 +1,27 @@
+.newbuttonsContainer {
+  margin: 20px;
+}
+
+.onOffContainer {
+  background-color: #ccc;
+  width: 220px;
+  overflow: hidden;
+  border: 2px solid #333;
+  border-radius: 5px;
+}
+
+.btnn {
+  float:left;
+  background-color: #f0f;
+  text-align: center;
+  width: 100px;
+  padding: 5px;
+  height: 4em;
+  line-height: 4em;
+}
+
+.btnn.active {
+	-moz-box-shadow: inset 5px 0 20px rgba(0, 0, 0, 0.53);
+	-webkit-box-shadow: inset 5px 0 20px rgba(0, 0, 0, 0.53);
+	box-shadow: inset 5px 0 20px rgba(0, 0, 0, 0.53);
+}

@@ -122,7 +122,7 @@ serialPort.on("open", function () {
 // Send a Buffer object to Arduino via serial connection
 //==========================================================
 function sendToArduino(buffer) {
-  console.log("f:sendToArduino()");
+  if(debug) console.log("f:sendToArduino()");
 
   if (serialConnected) serialPort.write(buffer, function(err) {
     if (err) if(debug) console.log("serial write err: " + err);
