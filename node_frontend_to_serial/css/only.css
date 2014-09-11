@@ -65,7 +65,7 @@ div.btn.active {
 
 #buttonsContainer {
   position: absolute;
-  top: 112px;
+  top: 135px; /* 112px */
   left: 6px;
 }
 

@@ -5,7 +5,7 @@
 .drawEraseContainer {
   float:left;
   background-color: #ccc;
-  width: 220px;
+  width: 320px;
   overflow: hidden;
   border: 2px solid #333;
   border-radius: 10px;
@@ -31,10 +31,10 @@
   background-color: #eee;
   text-align: center;
   color: #444;
-  width: 100px;
+  width: 150px;
   padding: 5px;
-  height: 4em;
-  line-height: 4em;
+  height: 5em;
+  line-height: 5em;
   /*opacity: 0.5;*/
   cursor: pointer;
 }
@@ -44,10 +44,10 @@
   background-color: #eee;
   text-align: center;
   color: #444;
-  width: 100px;
+  width: 150px;
   padding: 5px;
-  height: 4em;
-  line-height: 4em;
+  height: 5em;
+  line-height: 5em;
   /*opacity: 0.5;*/
   cursor: pointer;
 }

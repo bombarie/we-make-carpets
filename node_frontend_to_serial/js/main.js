@@ -178,7 +178,7 @@ $(function () {
       var t = e.originalEvent.touches[i];
       var pos = {
         x:1 + Math.floor((t.clientX - 6) / 26), // 6 = left-offset of #buttonsContainer
-        y:1 + Math.floor((t.clientY - 112) / 26) // 112 = top-offset of #buttonsContainer
+        y:1 + Math.floor((t.clientY - 135) / 26) // 112 = top-offset of #buttonsContainer
       };
       var $btn = $("#" + pos.x + "_" + pos.y);
 
@@ -209,5 +209,10 @@ $(function () {
       return false;
     })
   }, 1000 / 100); //transmit at 50fps
+
+
+  // at end if init turn everything off
+  socket.emit("allOff");
+
 
 });
