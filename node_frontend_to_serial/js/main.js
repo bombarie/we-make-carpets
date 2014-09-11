@@ -85,60 +85,25 @@ $(function () {
   console.log("...end generating buttons");
 
   //* als je happy bent met de Hammer oplossing dan mag deze weg.
-   // buttons event handlers
-   $("#led_on").on('mouseover touchend', function (e) {
-   $("#led_off").removeClass("active");
-   $(this).addClass("active");
-   });
-
-   $("#led_off").on('mouseover touchend', function (e) {
-   $("#led_on").removeClass("active");
-   $(this).addClass("active");
-   });
-
-   $("#all_off").on('mouseover touchend', function (e) {
-   console.log("btn pressed: turn all off");
-
-   $(".ledbtn.on").removeClass("on");
-   socket.emit("allOff");
-   });
-
-   $("#all_on").on('mouseover touchend', function (e) {
-   console.log("btn pressed: turn all on");
-
-   $('.ledbtn').each(function() {
-   $(this).addClass("on");
-   });
-   socket.emit("allOn");
-   });
-   //*/
-
-  /*
   // buttons event handlers
-  Hammer($("#led_on")[0], hammerOptions).on("tap", function (e) {
-    //   $("#led_on").on('mouseover touchend', function (e) {
-    console.log("drawing mode activated");
+  $("#led_on").on('mouseover touchend', function (e) {
     $("#led_off").removeClass("active");
-    $(e.target).addClass("active");
+    $(this).addClass("active");
   });
 
-  Hammer($("#led_off")[0], hammerOptions).on("tap", function (e) {
-    //   $("#led_off").on('mouseover touchend', function (e) {
-    console.log("erasing mode activated");
+  $("#led_off").on('mouseover touchend', function (e) {
     $("#led_on").removeClass("active");
-    $(e.target).addClass("active");
+    $(this).addClass("active");
   });
 
-  Hammer($("#all_off")[0], hammerOptions).on("tap", function (e) {
-    //   $("#all_off").on('mouseover touchend', function (e) {
+  $("#all_off").on('mouseover touchend', function (e) {
     console.log("btn pressed: turn all off");
 
     $(".ledbtn.on").removeClass("on");
     socket.emit("allOff");
   });
 
-  Hammer($("#all_on")[0], hammerOptions).on("tap", function (e) {
-    //   $("#all_on").on('mouseover touchend', function (e) {
+  $("#all_on").on('mouseover touchend', function (e) {
     console.log("btn pressed: turn all on");
 
     $('.ledbtn').each(function () {
@@ -146,7 +111,47 @@ $(function () {
     });
     socket.emit("allOn");
   });
+  $("#reconnect_serial").on('click', function (e) {
+    console.log("btn pressed: tell node.js to reconnect serial connection");
+
+    socket.emit("reconnectSerial");
+  });
   //*/
+
+  /*
+   // buttons event handlers
+   Hammer($("#led_on")[0], hammerOptions).on("tap", function (e) {
+   //   $("#led_on").on('mouseover touchend', function (e) {
+   console.log("drawing mode activated");
+   $("#led_off").removeClass("active");
+   $(e.target).addClass("active");
+   });
+
+   Hammer($("#led_off")[0], hammerOptions).on("tap", function (e) {
+   //   $("#led_off").on('mouseover touchend', function (e) {
+   console.log("erasing mode activated");
+   $("#led_on").removeClass("active");
+   $(e.target).addClass("active");
+   });
+
+   Hammer($("#all_off")[0], hammerOptions).on("tap", function (e) {
+   //   $("#all_off").on('mouseover touchend', function (e) {
+   console.log("btn pressed: turn all off");
+
+   $(".ledbtn.on").removeClass("on");
+   socket.emit("allOff");
+   });
+
+   Hammer($("#all_on")[0], hammerOptions).on("tap", function (e) {
+   //   $("#all_on").on('mouseover touchend', function (e) {
+   console.log("btn pressed: turn all on");
+
+   $('.ledbtn').each(function () {
+   $(this).addClass("on");
+   });
+   socket.emit("allOn");
+   });
+   //*/
 
   /*
    Hammer($("#all_on")[0], hammerOptions).on("tap", function(event) {
@@ -188,7 +193,7 @@ $(function () {
    */
   var transmit = setInterval(function () {
     $(".ledbtn.transmit").each(function () {
-//      console.log("transmit interval... ");
+      //      console.log("transmit interval... ");
       $(this).removeClass("transmit");
       socket.emit(($(this).hasClass("on") ? 'turnOff' : 'turnOn'), [ 62 - $(this).data("position").x, $(this).data("position").y]);
       return false;

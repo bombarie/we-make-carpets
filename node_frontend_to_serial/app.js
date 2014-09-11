@@ -6,8 +6,7 @@ var path 	= require('path');
 var serialport = require("serialport");
 var express	= require('express');
 
-
-var debug = false;
+var debug = true;
 
 //==========================================================
 // Set default IP and used ports
@@ -32,8 +31,8 @@ if (process.platform == 'linux') {
 }
 if(debug) console.log("Detected system is " + BASE_OS);
 
-//if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbmodemfa141"; // Uno
-if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbserial-A600eBhm"; // Duemilanove
+if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbmodemfa141"; // Uno
+//if (BASE_OS == OSX)   ARDUINO = "/dev/tty.usbserial-A600eBhm"; // Duemilanove
 if (BASE_OS == LINUX) ARDUINO = "/dev/ttyATH0";
 
 // this offset will me employed when sending serial data as a way to avoid accidentally sending the number 10 or 13 (ascii LF and CR)
@@ -70,51 +69,34 @@ if(!debug) io.set('log level', 0);
 //==========================================================
 var serialConnected = false;
 var SerialPort = serialport.SerialPort;
-var serialPort = new SerialPort(ARDUINO, {
-  baudrate: BAUDRATE,
+var serialPort = "";
+function startSerial(callback) {
+  if(debug) console.log("f:startSerial >> opening serial port");
 
-  // this parser will only trigger an event after a \n (newline)
-  parser: serialport.parsers.readline("\n")
-}, function(error)
-{
-	// Failed opening port (no arduino found)
-	console.error(error);
-});
-serialPort.on("open", function () {
-  serialConnected = true;
-  if(debug) console.log('Serial port opened >> system is ' + BASE_OS + ", portname '" + ARDUINO + "'");
+  // open serial port
+  serialPort = new SerialPort(ARDUINO, {
+    baudrate: BAUDRATE,
 
-  serialPort.on('data', function(data) {
-    if(debug) console.log('serial data received: ' + data);
-    if (data.split(" ")[0] == 'ping') {
-      var count = data.split(" ")[1];
-      console.log('	From arduino: ping count = ' + count);
-      if (isConnected) {
-        // alternative: io.sockets.emit()....
-        connectedSocket.emit('pingBack', count);
-      }
-
-      var ledState = count % 2;
-//      console.log('	ledState: ' + ledState);
-      serialPort.write(ledState, function(err, results) {
-        // console.log('err ' + err);
-        // console.log('results ' + results);
-      });
-    } else {
-      // console.log(data);
-    }
+    // this parser will only trigger an event after a \n (newline)
+    parser: serialport.parsers.readline("\n")
+  }, function(error)
+  {
+    // Failed opening port (no arduino found)
+    console.error(error);
   });
+  if (callback != null) callback();
 
-  // Test that serialport is working.
-  // For now that entails requesting the Arduino's current ping count
-//  console.log("  Serial test >> writing a 1-byte buffer containing the number 33 to Arduino");
-//  var b = new Buffer(1);
-//  b[0] = 33;
-//  serialPort.write(b, function(err, results) {
-//    console.log('    err ' + err);
-//    console.log('    results ' + results);
-//  });
-});
+  // event handlers
+  serialPort.on("open", function () {
+    if(debug) console.log('Serial port opened >> system is ' + BASE_OS + ", portname '" + ARDUINO + "'");
+    serialConnected = true;
+
+    serialPort.on('data', function(data) {
+      if(debug) console.log('serial data received: ' + data);
+    });
+  });
+}
+startSerial();
 
 
 
@@ -188,14 +170,22 @@ io.sockets.on('connection', function (socket) {
     sendToArduino(toSend);
   });
 
-  socket.on('getPing', function(data) {
-		if(debug) console.log("socket trigger 'getPing' >> data: ", data);
+  socket.on('reconnectSerial', function(data) {
+		if(debug) console.log("socket trigger 'reconnectSerial'");
 
-    // '2' will be the code for sending back the current internal counter value
-    if(debug) console.log("requesting pingcount to Arduino >> serialConnected = " + serialConnected);
-    if (serialConnected) serialPort.write("2");
+    if (serialConnected) {
+      serialConnected = false;
+      serialPort.close(function() {
+        if(debug) console.log("opening Serial port");
+        startSerial();
+      });
+    } else {
+      if(debug) console.log("serial not connected so can't close...");
+    }
+    if(debug) console.log("closing Serial port");
 	});
 
+  /*
   socket.on('setLed', function(data) {
     if(debug) console.log("socket trigger 'setLed' >> data: ", data);
 
@@ -203,6 +193,7 @@ io.sockets.on('connection', function (socket) {
     // TODO check here if 'data' contains the correct content before blindly sending this off
     if (serialConnected) serialPort.write(data);
   });
+  //*/
 
 	//==========================================================
 	// Device disconnected
