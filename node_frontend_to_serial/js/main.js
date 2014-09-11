@@ -86,6 +86,16 @@ $(function () {
 
   //* als je happy bent met de Hammer oplossing dan mag deze weg.
   // buttons event handlers
+//  $("#led_on2").on('click', function (e) {
+//    $("#led_off2").removeClass("active");
+//    $(this).addClass("active");
+//  });
+//
+//  $("#led_off2").on('click', function (e) {
+//    $("#led_on2").removeClass("active");
+//    $(this).addClass("active");
+//  });
+//
   $("#led_on").on('mouseover touchend', function (e) {
     $("#led_off").removeClass("active");
     $(this).addClass("active");

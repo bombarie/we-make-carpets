@@ -56,12 +56,12 @@ div.btn.active {
 	box-shadow: 0 0 5px rgba(0, 255, 0, 0.65);
 }
 
-#led_on {
-  background-color: #444;
-}
-#led_off {
-  background-color: #444;
-}
+/*#led_on {*/
+  /*background-color: #444;*/
+/*}*/
+/*#led_off {*/
+  /*background-color: #444;*/
+/*}*/
 
 #buttonsContainer {
   position: absolute;

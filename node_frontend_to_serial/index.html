@@ -11,19 +11,27 @@
   <link href="css/btns.css" rel="stylesheet">
 </head>
 <body class="body">
-<!--<div class="clearfix newbuttonsContainer">-->
-  <!--<div class="clearfix onOffContainer">-->
-    <!--<div class="btnn draw">draw</div>-->
-    <!--<div class="btnn erase active">erase</div>-->
-  <!--</div>-->
-<!--</div>-->
-<div class="clearfix" id="topButtonsContainer">
-  <div id="led_on" class="btn drawerase">erase</div>
-  <div id="led_off" class="btn drawerase active">draw</div>
-  <div class="spacer">&nbsp;</div>
-  <div id="all_off" class="btn">all off</div>
-  <div id="all_on" class="btn">all on</div>
+
+<div class="clearfix newbuttonsContainer">
+  <div class="clearfix drawEraseContainer">
+    <div id="led_on" class="drawBtnn draw active">draw</div>
+    <div id="led_off" class="drawBtnn erase">erase</div>
+  </div>
+  <div class="clearfix onOffContainer">
+    <div id="all_off" class="allBtnn">all off</div>
+    <div id="all_on" class="allBtnn">all on</div>
+  </div>
 </div>
+
+<!--<div class="clearfix" id="topButtonsContainer">-->
+  <!--<div id="led_on" class="btn drawerase">erase</div>-->
+  <!--<div id="led_off" class="btn drawerase active">draw</div>-->
+  <!--<div class="spacer">&nbsp;</div>-->
+  <!--<div id="all_off" class="btn">all off</div>-->
+  <!--<div id="all_on" class="btn">all on</div>-->
+  <!--<div class="spacer">&nbsp;</div>-->
+  <!--<div id="reconnect_serial" class="btn">reconnect serial</div>-->
+<!--</div>-->
 
 <div id="buttonsContainer" class="clearfix"></div>
 
