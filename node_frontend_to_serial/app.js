@@ -104,7 +104,7 @@ startSerial();
 // Send a Buffer object to Arduino via serial connection
 //==========================================================
 function sendToArduino(buffer) {
-  if(debug) console.log("f:sendToArduino()");
+//  if(debug) console.log("f:sendToArduino()");
 
   if (serialConnected) serialPort.write(buffer, function(err) {
     if (err) if(debug) console.log("serial write err: " + err);
@@ -127,7 +127,7 @@ io.sockets.on('connection', function (socket) {
 	socket.emit('connected', '');
 
   socket.on('turnOn', function(data) {
-    if(debug) console.log("turn on led ", data);
+//    if(debug) console.log("turn on led ", data);
 
     var toSend = new Buffer(3);
     toSend[0] = 255;                      // 255 = turn on
@@ -138,7 +138,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('turnOff', function(data) {
-    if(debug) console.log("turn off led ", data);
+//    if(debug) console.log("turn off led ", data);
 
     var toSend = new Buffer(3);
     toSend[0] = 254;                      // 254 = turn off
@@ -149,7 +149,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on("allOn", function(data) {
-    if (debug) console.log("turn all leds on");
+//    if (debug) console.log("turn all leds on");
 
     var toSend = new Buffer(3);
     toSend[0] = 253; // 253 = all on
@@ -160,7 +160,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on("allOff", function(data) {
-    if (debug) console.log("turn all leds off");
+//    if (debug) console.log("turn all leds off");
 
     var toSend = new Buffer(3);
     toSend[0] = 252;  // 252 = all on
