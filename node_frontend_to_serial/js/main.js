@@ -177,8 +177,8 @@ $(function () {
 
       var t = e.originalEvent.touches[i];
       var pos = {
-        x:1 + Math.floor((t.clientX - 6) / 26), // 6 = left-offset of #buttonsContainer
-        y:1 + Math.floor((t.clientY - 135) / 26) // 112 = top-offset of #buttonsContainer
+        x:1 + Math.floor((t.clientX - 12) / 24), // 6 = left-offset of #buttonsContainer
+        y:1 + Math.floor((t.clientY - 135) / 24) // 112 = top-offset of #buttonsContainer
       };
       var $btn = $("#" + pos.x + "_" + pos.y);
 
