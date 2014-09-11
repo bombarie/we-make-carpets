@@ -106,10 +106,13 @@ startSerial();
 //==========================================================
 function doArduinoHandshake() {
 
-  var toSend = new Buffer(3);
-  toSend[0] = 250;
-  toSend[1] = 230;
-  toSend[2] = 210;
+  var toSend = new Buffer(6);
+  toSend[0] = 250;                      // handshake var 1
+  toSend[1] = 230;                      // handshake var 2
+  toSend[2] = 210;                      // handshake var 3
+  toSend[3] = 250;
+  toSend[4] = 230;
+  toSend[5] = 210;
 
   sendToArduino(toSend);
 }
@@ -144,10 +147,13 @@ io.sockets.on('connection', function (socket) {
   socket.on('turnOn', function(data) {
 //    if(debug) console.log("turn on led ", data);
 
-    var toSend = new Buffer(3);
-    toSend[0] = 255;                      // 255 = turn on
-    toSend[1] = data[0] + VALUES_OFFSET;  // column (anode) data
-    toSend[2] = data[1] + VALUES_OFFSET;  // row (cathode) data
+    var toSend = new Buffer(6);
+    toSend[0] = 250;                      // handshake var 1
+    toSend[1] = 230;                      // handshake var 2
+    toSend[2] = 210;                      // handshake var 3
+    toSend[3] = 255;                      // 255 = turn on
+    toSend[4] = data[0] + VALUES_OFFSET;  // column (anode) data
+    toSend[5] = data[1] + VALUES_OFFSET;  // row (cathode) data
 
     sendToArduino(toSend);
   });
@@ -155,10 +161,13 @@ io.sockets.on('connection', function (socket) {
   socket.on('turnOff', function(data) {
 //    if(debug) console.log("turn off led ", data);
 
-    var toSend = new Buffer(3);
-    toSend[0] = 254;                      // 254 = turn off
-    toSend[1] = data[0] + VALUES_OFFSET;  // column (anode) data
-    toSend[2] = data[1] + VALUES_OFFSET;  // row (cathode) data
+    var toSend = new Buffer(6);
+    toSend[0] = 250;                      // handshake var 1
+    toSend[1] = 230;                      // handshake var 2
+    toSend[2] = 210;                      // handshake var 3
+    toSend[3] = 254;                      // 254 = turn off
+    toSend[4] = data[0] + VALUES_OFFSET;  // column (anode) data
+    toSend[5] = data[1] + VALUES_OFFSET;  // row (cathode) data
 
     sendToArduino(toSend);
   });
@@ -166,10 +175,13 @@ io.sockets.on('connection', function (socket) {
   socket.on("allOn", function(data) {
 //    if (debug) console.log("turn all leds on");
 
-    var toSend = new Buffer(3);
-    toSend[0] = 253; // 253 = all on
-    toSend[1] = 0;   // void data
-    toSend[2] = 0;   // void data
+    var toSend = new Buffer(6);
+    toSend[0] = 250;                      // handshake var 1
+    toSend[1] = 230;                      // handshake var 2
+    toSend[2] = 210;                      // handshake var 3
+    toSend[3] = 253; // 253 = all on
+    toSend[4] = 0;   // void data
+    toSend[5] = 0;   // void data
 
     sendToArduino(toSend);
   });
@@ -177,10 +189,13 @@ io.sockets.on('connection', function (socket) {
   socket.on("allOff", function(data) {
 //    if (debug) console.log("turn all leds off");
 
-    var toSend = new Buffer(3);
-    toSend[0] = 252;  // 252 = all on
-    toSend[1] = 0;   // void data
-    toSend[2] = 0;   // void data
+    var toSend = new Buffer(6);
+    toSend[0] = 250;                      // handshake var 1
+    toSend[1] = 230;                      // handshake var 2
+    toSend[2] = 210;                      // handshake var 3
+    toSend[3] = 252;  // 252 = all on
+    toSend[4] = 0;   // void data
+    toSend[5] = 0;   // void data
 
     sendToArduino(toSend);
   });
