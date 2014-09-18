@@ -19,7 +19,7 @@
 .secretContainer {
   display: none;
   background-color: #faa;
-  border-radius: 5px;
+  border-radius: 10px;
   float:right;
   /*margin-left: 60px;*/
 }
@@ -64,6 +64,14 @@
   /*opacity: 0.5;*/
   cursor: pointer;
 }
+
+.allBtnn.reconnect {
+  padding: 0;
+  margin: 0.8em;
+  height: 4em;
+  line-height: 4em;
+}
+
 .drawBtnn:active .allBtnn:active {
   background-color: #ccc;
 }
