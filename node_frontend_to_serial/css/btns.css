@@ -16,6 +16,19 @@
   margin-left: 60px;
 }
 
+.secretContainer {
+  display: none;
+  background-color: #faa;
+  border-radius: 5px;
+  float:right;
+  /*margin-left: 60px;*/
+}
+
+.secretContainer .label {
+  float: left;
+  padding: 38px;
+}
+
 .allBtnn {
   background-color: #eee;
   border: 2px solid #333;

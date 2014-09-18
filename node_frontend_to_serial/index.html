@@ -13,6 +13,12 @@
 </head>
 <body class="body">
 
+<!--<div class="lostconnectionContainer">-->
+  <!--<div class="centerme" align="center">-->
+    <!--<div class="title">Connection to LED Carpet lost</div>-->
+    <!--<div class="allBtnn" >try reconnecting</div>-->
+  <!--</div>-->
+<!--</div>-->
 <div class="clearfix newbuttonsContainer">
   <div class="clearfix drawEraseContainer">
     <div id="led_on" class="drawBtnn draw active">draw</div>
@@ -21,6 +27,10 @@
   <div class="clearfix onOffContainer">
     <div id="all_off" class="allBtnn">all off</div>
     <div id="all_on" class="allBtnn">all on</div>
+  </div>
+  <div class="clearfix secretContainer">
+    <div class="label">Connection to server lost...</div>
+    <div id="resetSocketIO" class="allBtnn">reconnect</div>
   </div>
 </div>
 
@@ -37,7 +47,8 @@
 <div id="buttonsContainer" class="clearfix"></div>
 
 <script src="js/libs/jquery-2.1.1.min.js"></script>
-<script src="js/libs/hammer.min.js"></script>
+<!--<script src="js/libs/hammer.min.js"></script>-->
+<script src="js/libs/jquery.hammer.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <!--<script src="http://192.168.1.106:1337/socket.io/socket.io.js"></script>-->
 <script src="js/conversion.js"></script>

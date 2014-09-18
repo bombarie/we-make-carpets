@@ -4,33 +4,47 @@
 
  */
 
-var socket = io.connect(window.location.hostname + ":1337");
+var socket = null;
+function connectSocketIO() {
+  console.log("f:connectSocketIO");
 
-socket.on('pingBack', function (msg) {
-  console.log("socket.io >> testback() >>  got a reply: " + msg);
-  $("span.counterHolder").text(msg);
-});
+  if (socket != null) {
+    socket.disconnect();
+    socket = null;
+  }
 
-socket.on('connected', function (msg) {
-  console.log("node says I'm connected");
-});
+  socket = io.connect(window.location.hostname + ":1337");
 
-// some debugging statements concerning socket.io
-socket.on('disconnect', function () {
-  console.log('disconnected');
-});
-socket.on('reconnecting', function (seconds) {
-  console.log('reconnecting in ' + seconds + ' seconds');
-});
-socket.on('reconnect', function () {
-  console.log('reconnected');
-});
-socket.on('reconnect_failed', function () {
-  console.log('failed to reconnect');
-});
-socket.on('connect', function () {
-  console.log('connected');
-});
+//  socket.on('pingBack', function (msg) {
+//    console.log("socket.io >> testback() >>  got a reply: " + msg);
+//    $("span.counterHolder").text(msg);
+//  });
+
+  socket.on('connected', function (msg) {
+    console.log("node says I'm connected");
+  });
+
+  // some debugging statements concerning socket.io
+  socket.on('disconnect', function () {
+    console.log('disconnected');
+    $errorContainer.fadeIn();
+  });
+  socket.on('reconnecting', function (seconds) {
+    console.log('reconnecting in ' + seconds + ' seconds');
+  });
+  socket.on('reconnect', function () {
+    console.log('reconnected');
+    $errorContainer.fadeOut();
+  });
+  socket.on('reconnect_failed', function () {
+    console.log('failed to reconnect');
+  });
+  socket.on('connect', function () {
+    console.log('connected');
+    $errorContainer.fadeOut();
+  });
+
+}
 
 
 /*
@@ -76,8 +90,52 @@ var hammerOptions = {
   rotate:false
 };
 
+var hammerTouchHoldOptions = {
+  drag:false,
+  transform:false,
+  rotate:false
+};
+
+
+function textureBtnEventsHandler(ev){
+  console.log("f:textureBtnEventsHandler()");
+  ev.preventDefault();
+
+//    console.log("ev: ", ev);
+//    console.log("ev.type: ", ev.type);
+  if(!ev.gesture) {
+//    console.log(" !ev.gesture.....");
+    return;
+  }
+  switch(ev.type){
+    case 'tap': // Ask to delete (flag) a texture
+      console.log("f:textureBtnEventsHandler() >> tap gesture");
+
+      connectSocketIO();
+      break;
+    case 'hold': // Ask to delete (flag) a texture
+      console.log("f:textureBtnEventsHandler() >> hold gesture");
+      var reply = confirm("reset connection to LED Carpet?");
+      console.log("reply = " + reply);
+      if (reply) connectSocketIO();
+//      var reply = prompt("Voer pin in om afbeelding te verwijderen.", "");
+//      if(reply == 'abba'){
+//        $(ev.currentTarget).slideUp("slow", function(){$(this).remove();});
+//        var flagTexture = $(ev.currentTarget).find('img').attr('src');
+//        socket.emit('flagTexture', {'textureName':flagTexture});
+//      }
+      break;
+  }
+}
+
+var $errorContainer = null;
 $(function () {
   console.log("ready");
+
+  $errorContainer = $(".secretContainer");
+
+  // connect to SocketIO (node.js backend);
+  connectSocketIO();
 
   // generate matrix
   console.log("begin generating buttons...");
@@ -126,6 +184,17 @@ $(function () {
 
     socket.emit("reconnectSerial");
   });
+
+  var textureBtnEvents = 'tap hold';
+  var hammertime = Hammer($('#resetSocketIO')[0], {
+    prevent_default: true,
+//    no_mouseevents: true,
+    hold_timeout: 1500,
+    hold_threshold: 30,
+    tap_max_touchtime: 2000
+  })
+    .on(textureBtnEvents, textureBtnEventsHandler);
+
   //*/
 
   /*
