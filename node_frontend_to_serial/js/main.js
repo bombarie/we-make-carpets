@@ -10,15 +10,11 @@ function connectSocketIO() {
 
   if (socket != null) {
     socket.disconnect();
-    socket = null;
+    socket.destroy();
+//    socket = null;
   }
 
   socket = io.connect(window.location.hostname + ":1337");
-
-//  socket.on('pingBack', function (msg) {
-//    console.log("socket.io >> testback() >>  got a reply: " + msg);
-//    $("span.counterHolder").text(msg);
-//  });
 
   socket.on('connected', function (msg) {
     console.log("node says I'm connected");
@@ -42,6 +38,9 @@ function connectSocketIO() {
   socket.on('connect', function () {
     console.log('connected');
     $errorContainer.fadeOut();
+  });
+  socket.on('error', function () {
+    console.log('socket.io error');
   });
 
 }

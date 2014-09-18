@@ -66,6 +66,7 @@
 }
 
 .allBtnn.reconnect {
+  display: none; /* temp */
   padding: 0;
   margin: 0.8em;
   height: 4em;
