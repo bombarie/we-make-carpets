@@ -57,8 +57,8 @@ var server = http.createServer(app);
 server.listen(HTTP_PORT);
 if(debug) console.log("server listening at port " + HTTP_PORT);
 
-var io = socketio.listen(server);
-//var io = socketio(server);
+//var io = socketio.listen(server);
+var io = socketio(server);
 if(!debug) io.set('log level', 0);
 
 

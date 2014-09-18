@@ -31,6 +31,7 @@ function connectSocketIO() {
   socket.on('reconnect', function () {
     console.log('reconnected');
     $errorContainer.fadeOut();
+    allLedsOff(); // user may have drawn, making the display iPad->carpet asymmetrical -> clear all
   });
   socket.on('reconnect_failed', function () {
     console.log('failed to reconnect');
@@ -38,6 +39,7 @@ function connectSocketIO() {
   socket.on('connect', function () {
     console.log('connected');
     $errorContainer.fadeOut();
+    allLedsOff(); // user may have drawn, making the display iPad->carpet asymmetrical -> clear all
   });
   socket.on('error', function () {
     console.log('socket.io error');
@@ -127,6 +129,15 @@ function textureBtnEventsHandler(ev){
   }
 }
 
+
+function allLedsOff() {
+  console.log("f:allLedsOff()");
+
+  $(".ledbtn.on").removeClass("on");
+  socket.emit("allOff");
+}
+
+
 var $errorContainer = null;
 $(function () {
   console.log("ready");
@@ -166,8 +177,7 @@ $(function () {
   $("#all_off").on('mouseover touchend', function (e) {
     console.log("btn pressed: turn all off");
 
-    $(".ledbtn.on").removeClass("on");
-    socket.emit("allOff");
+    allLedsOff();
   });
 
   $("#all_on").on('mouseover touchend', function (e) {
@@ -280,7 +290,7 @@ $(function () {
 
 
   // at end if init turn everything off
-  socket.emit("allOff");
+//  socket.emit("allOff");
 
 
 });
